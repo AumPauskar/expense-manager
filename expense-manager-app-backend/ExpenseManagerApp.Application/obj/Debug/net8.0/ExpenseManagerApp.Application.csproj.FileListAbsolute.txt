@@ -1,0 +1,16 @@
+C:\Users\aumpa\Documents\scripts\expense-manager\expense-manager-app-backend\ExpenseManagerApp.Application\obj\Debug\net8.0\ExpenseManagerApp.Application.csproj.AssemblyReference.cache
+C:\Users\aumpa\Documents\scripts\expense-manager\expense-manager-app-backend\ExpenseManagerApp.Application\obj\Debug\net8.0\ExpenseManagerApp.Application.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\aumpa\Documents\scripts\expense-manager\expense-manager-app-backend\ExpenseManagerApp.Application\obj\Debug\net8.0\ExpenseManagerApp.Application.AssemblyInfoInputs.cache
+C:\Users\aumpa\Documents\scripts\expense-manager\expense-manager-app-backend\ExpenseManagerApp.Application\obj\Debug\net8.0\ExpenseManagerApp.Application.AssemblyInfo.cs
+C:\Users\aumpa\Documents\scripts\expense-manager\expense-manager-app-backend\ExpenseManagerApp.Application\obj\Debug\net8.0\ExpenseManagerApp.Application.csproj.CoreCompileInputs.cache
+C:\Users\aumpa\Documents\scripts\expense-manager\expense-manager-app-backend\ExpenseManagerApp.Application\obj\Debug\net8.0\ExpenseManagerApp.Application.sourcelink.json
+C:\Users\aumpa\Documents\scripts\expense-manager\expense-manager-app-backend\ExpenseManagerApp.Application\bin\Debug\net8.0\ExpenseManagerApp.Application.deps.json
+C:\Users\aumpa\Documents\scripts\expense-manager\expense-manager-app-backend\ExpenseManagerApp.Application\bin\Debug\net8.0\ExpenseManagerApp.Application.dll
+C:\Users\aumpa\Documents\scripts\expense-manager\expense-manager-app-backend\ExpenseManagerApp.Application\bin\Debug\net8.0\ExpenseManagerApp.Application.pdb
+C:\Users\aumpa\Documents\scripts\expense-manager\expense-manager-app-backend\ExpenseManagerApp.Application\bin\Debug\net8.0\ExpenseManagerApp.Domain.dll
+C:\Users\aumpa\Documents\scripts\expense-manager\expense-manager-app-backend\ExpenseManagerApp.Application\bin\Debug\net8.0\ExpenseManagerApp.Domain.pdb
+C:\Users\aumpa\Documents\scripts\expense-manager\expense-manager-app-backend\ExpenseManagerApp.Application\obj\Debug\net8.0\ExpenseM.18225BAD.Up2Date
+C:\Users\aumpa\Documents\scripts\expense-manager\expense-manager-app-backend\ExpenseManagerApp.Application\obj\Debug\net8.0\ExpenseManagerApp.Application.dll
+C:\Users\aumpa\Documents\scripts\expense-manager\expense-manager-app-backend\ExpenseManagerApp.Application\obj\Debug\net8.0\refint\ExpenseManagerApp.Application.dll
+C:\Users\aumpa\Documents\scripts\expense-manager\expense-manager-app-backend\ExpenseManagerApp.Application\obj\Debug\net8.0\ExpenseManagerApp.Application.pdb
+C:\Users\aumpa\Documents\scripts\expense-manager\expense-manager-app-backend\ExpenseManagerApp.Application\obj\Debug\net8.0\ref\ExpenseManagerApp.Application.dll
