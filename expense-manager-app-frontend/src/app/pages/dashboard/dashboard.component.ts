@@ -97,7 +97,27 @@ import { UiInputComponent } from '../../components/ui/input.component';
             <p class="text-xs text-muted-foreground">For this month</p>
           </ui-card-content>
         </ui-card>
-        <!-- Add more stats like 'Budget remaining' etc if backend supports -->
+        <ui-card>
+          <ui-card-header class="flex flex-row items-center justify-between space-y-0 pb-2">
+            <ui-card-title class="text-sm font-medium">Spent This Week</ui-card-title>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 text-muted-foreground"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/><path d="M16 18h.01"/></svg>
+          </ui-card-header>
+          <ui-card-content>
+            <div class="text-2xl font-bold">{{ spentThisWeek | currency }}</div>
+            <p class="text-xs text-muted-foreground">Mon - Today</p>
+          </ui-card-content>
+        </ui-card>
+
+        <ui-card>
+          <ui-card-header class="flex flex-row items-center justify-between space-y-0 pb-2">
+            <ui-card-title class="text-sm font-medium">Average Daily</ui-card-title>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 text-muted-foreground"><path d="M12 2v20"/><path d="M21 12H3"/><circle cx="12" cy="12" r="10"/></svg>
+          </ui-card-header>
+          <ui-card-content>
+            <div class="text-2xl font-bold">{{ averageSpent | currency }}</div>
+            <p class="text-xs text-muted-foreground">Per day this month</p>
+          </ui-card-content>
+        </ui-card>
       </div>
 
       <!-- Add Expense Form (Simple inline for now) -->
@@ -286,5 +306,38 @@ export class DashboardComponent implements OnInit {
       // If not spent (Pending), required must be true as per logic
       this.newExpense.required = true;
     }
+  }
+
+  get spentThisWeek(): number {
+    const today = new Date();
+    if (!this.isCurrentMonth(this.currentDate)) return 0;
+
+    // Start of week (Monday)
+    const day = today.getDay();
+    const diff = today.getDate() - (day === 0 ? 6 : day - 1);
+    const startOfWeek = new Date(today.getFullYear(), today.getMonth(), diff, 0, 0, 0);
+
+    return this.expenses
+      .filter(e => new Date(e.date) >= startOfWeek)
+      .reduce((sum, e) => sum + e.transactionAmount, 0);
+  }
+
+  get averageSpent(): number {
+    if (this.expenses.length === 0) return 0;
+    const today = new Date();
+    const isCurrent = this.isCurrentMonth(this.currentDate);
+
+    let days: number;
+    if (isCurrent) {
+      days = today.getDate();
+    } else {
+      const isFuture = this.currentDate > today;
+      if (isFuture) return 0;
+
+      // Elapsed month: get days in that month
+      days = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth() + 1, 0).getDate();
+    }
+
+    return this.totalSpent / (days || 1);
   }
 }
