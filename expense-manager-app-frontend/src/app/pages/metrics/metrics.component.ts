@@ -22,7 +22,7 @@ import { UiCardComponent, UiCardContentComponent, UiCardHeaderComponent, UiCardT
     DatePipe
   ],
   template: `
-    <div class="space-y-6 pb-12">
+    <div class="space-y-8">
        <div>
         <h2 class="text-3xl font-bold tracking-tight">Metrics</h2>
         <p class="text-muted-foreground">Financial overview for {{ currentDate | date:'MMMM yyyy' }}</p>

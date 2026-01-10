@@ -4,8 +4,10 @@ import { Component } from '@angular/core';
     selector: 'app-settings',
     standalone: true,
     template: `
-    <h2 class="text-3xl font-bold tracking-tight mb-4">Settings</h2>
-    <p>Settings content here.</p>
+    <div class="space-y-8">
+      <h2 class="text-3xl font-bold tracking-tight mb-4">Settings</h2>
+      <p>Settings content here.</p>
+    </div>
   `,
     imports: []
 })

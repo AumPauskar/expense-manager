@@ -26,8 +26,7 @@ import { UiInputComponent } from '../../components/ui/input.component';
     DatePipe
   ],
   template: `
-    <div class="min-h-screen bg-background p-6 space-y-8">
-      <!-- Header -->
+    <div class="space-y-8">
       <!-- Header -->
       <div class="flex items-center justify-between">
         <div>
