@@ -1,0 +1,57 @@
+<div class="space-y-6">
+    <div>
+        <h2 class="text-3xl font-bold tracking-tight">Metrics</h2>
+        <p class="text-muted-foreground">Financial overview for {{ currentDate | date:'MMMM yyyy' }}</p>
+    </div>
+
+    <!-- Stats Cards (Same as Dashboard) -->
+    <app-stats-cards [totalSpent]="totalSpent" [totalEarned]="totalEarned" [spentThisWeek]="spentThisWeek"
+        [averageSpent]="averageSpent" [currencyCode]="currencyCode">
+    </app-stats-cards>
+
+    <div class="grid gap-4 md:grid-cols-2">
+        <!-- Total Spent (Week Wise) -->
+        <ui-card>
+            <ui-card-header>
+                <ui-card-title>Total Spent (Week Wise)</ui-card-title>
+            </ui-card-header>
+            <ui-card-content>
+                <canvas baseChart [data]="spentWeekWiseData" [options]="barChartOptions" [type]="'bar'">
+                </canvas>
+            </ui-card-content>
+        </ui-card>
+
+        <!-- Total Earned (Week Wise) -->
+        <ui-card>
+            <ui-card-header>
+                <ui-card-title>Total Earned (Week Wise)</ui-card-title>
+            </ui-card-header>
+            <ui-card-content>
+                <canvas baseChart [data]="earnedWeekWiseData" [options]="barChartOptions" [type]="'bar'">
+                </canvas>
+            </ui-card-content>
+        </ui-card>
+
+        <!-- Spent This Week (Day Wise) -->
+        <ui-card>
+            <ui-card-header>
+                <ui-card-title>Spent This Week</ui-card-title>
+            </ui-card-header>
+            <ui-card-content>
+                <canvas baseChart [data]="spentThisWeekData" [options]="barChartOptions" [type]="'bar'">
+                </canvas>
+            </ui-card-content>
+        </ui-card>
+
+        <!-- Average Daily (Week Wise) -->
+        <ui-card>
+            <ui-card-header>
+                <ui-card-title>Average Daily (Week Wise)</ui-card-title>
+            </ui-card-header>
+            <ui-card-content>
+                <canvas baseChart [data]="averageDailyData" [options]="lineChartOptions" [type]="'line'">
+                </canvas>
+            </ui-card-content>
+        </ui-card>
+    </div>
+</div>

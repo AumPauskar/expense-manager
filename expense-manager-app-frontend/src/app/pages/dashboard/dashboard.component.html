@@ -1,0 +1,106 @@
+<div class="space-y-6">
+    <!-- Header -->
+    <div class="flex items-center justify-between">
+        <div>
+            <h2 class="text-3xl font-bold tracking-tight">Dashboard</h2>
+            <p class="text-muted-foreground">Welcome back, {{ username }}</p>
+        </div>
+    </div>
+
+    <!-- Stats -->
+    <app-stats-cards [totalSpent]="totalSpent" [totalEarned]="totalEarned" [spentThisWeek]="spentThisWeek"
+        [averageSpent]="averageSpent" [currencyCode]="currencyCode">
+    </app-stats-cards>
+
+    <!-- Add Expense Form (Simple inline for now) -->
+    <ui-card>
+        <ui-card-header>
+            <ui-card-title>Add New Expense</ui-card-title>
+        </ui-card-header>
+        <ui-card-content class="flex flex-col md:flex-row gap-4 items-end">
+            <div class="grid gap-2 w-full">
+                <label class="text-sm font-medium">Name</label>
+                <ui-input placeholder="Grocery" [(ngModel)]="newExpense.name"></ui-input>
+            </div>
+            <div class="grid gap-2 w-full">
+                <label class="text-sm font-medium">Amount</label>
+                <ui-input type="number" placeholder="0.00" [(ngModel)]="newExpense.transactionAmount"></ui-input>
+            </div>
+            <div class="flex items-center gap-2 pb-2">
+                <!-- Checkboxes mimicking shadcn switch/checkbox roughly -->
+                <label class="flex items-center gap-2 text-sm" [class.opacity-50]="!newExpense.spent">
+                    <input type="checkbox" [(ngModel)]="newExpense.required" [disabled]="!newExpense.spent"
+                        class="accent-primary rounded" /> Required
+                </label>
+                <label class="flex items-center gap-2 text-sm">
+                    <input type="checkbox" [(ngModel)]="newExpense.cash" class="accent-primary rounded" /> Cash
+                </label>
+                <label class="flex items-center gap-2 text-sm">
+                    <input type="checkbox" [(ngModel)]="newExpense.spent" (ngModelChange)="onSpentChange($event)"
+                        class="accent-primary rounded" /> Spent
+                </label>
+            </div>
+            <ui-button (click)="addExpense()">Add</ui-button>
+        </ui-card-content>
+    </ui-card>
+
+    <!-- Expense List -->
+    <ui-card>
+        <ui-card-header>
+            <ui-card-title>Recent Expenses</ui-card-title>
+            <ui-card-description>A list of your recent transactions.</ui-card-description>
+        </ui-card-header>
+        <ui-card-content>
+            <div class="rounded-md border">
+                <table class="w-full text-sm text-left">
+                    <thead class="bg-muted/50 text-muted-foreground">
+                        <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+                            <th class="h-12 px-4 align-middle font-medium">Date</th>
+                            <th class="h-12 px-4 align-middle font-medium">Name</th>
+
+                            <th class="h-12 px-4 align-middle font-medium">Type</th>
+                            <th class="h-12 px-4 align-middle font-medium text-right">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let expense of paginatedExpenses"
+                            class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+                            <td class="p-4 align-middle">{{ expense.date | date:'mediumDate' }}</td>
+                            <td class="p-4 align-middle font-medium">{{ expense.name }}</td>
+
+                            <td class="p-4 align-middle">{{ expense.cash ? 'Cash' : 'Online' }}</td>
+                            <td class="p-4 align-middle text-right" [ngClass]="{
+                          'text-red-600': expense.spent && !expense.required,
+                          'text-green-600': !expense.spent,
+                          'text-amber-600': expense.spent && expense.required
+                        }">
+                                {{ expense.transactionAmount | currency:currencyCode }}
+                            </td>
+                        </tr>
+                        <tr *ngIf="expenses.length === 0">
+                            <td colspan="4" class="p-4 text-center text-muted-foreground">No expenses found for this
+                                month.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </ui-card-content>
+        <!-- PAGINATION CONTROLS -->
+        <nav hlmPagination class="mt-4 flex justify-end">
+            <ul hlmPaginationContent>
+                <li hlmPaginationItem>
+                    <hlm-pagination-previous (click)="prevPage()" />
+                    <!-- Assuming link input isn't strictly required if we intercept click, or we pass link="#" and prevent default -->
+                </li>
+                <li hlmPaginationItem *ngFor="let page of getVisiblePages()">
+                    <a *ngIf="page !== -1" hlmPaginationLink [isActive]="currentPage === page" (click)="setPage(page)"
+                        class="cursor-pointer">{{ page }}</a>
+                    <hlm-pagination-ellipsis *ngIf="page === -1" />
+                </li>
+                <li hlmPaginationItem>
+                    <hlm-pagination-next (click)="nextPage()" />
+                </li>
+            </ul>
+        </nav>
+    </ui-card>
+</div>
