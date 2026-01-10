@@ -93,8 +93,33 @@ import { UiInputComponent } from '../../components/ui/input.component';
             </svg>
           </ui-card-header>
           <ui-card-content>
-            <div class="text-2xl font-bold">{{ totalSpent | currency }}</div>
-            <p class="text-xs text-muted-foreground">For this month</p>
+            <div class="text-2xl font-bold text-red-600">{{ totalSpent | currency }}</div>
+            <p class="text-xs text-muted-foreground">Actual expenses</p>
+          </ui-card-content>
+        </ui-card>
+
+        <ui-card>
+          <ui-card-header class="flex flex-row items-center justify-between space-y-0 pb-2">
+            <ui-card-title class="text-sm font-medium">Total Earned</ui-card-title>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              class="h-4 w-4 text-muted-foreground"
+            >
+              <path d="m12 19 7-7 3 3-7 7-3-3z"/>
+              <path d="m18 13-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/>
+              <path d="m2 2 20 20"/>
+              <path d="m8 8 4 4 2-2"/>
+            </svg>
+          </ui-card-header>
+          <ui-card-content>
+            <div class="text-2xl font-bold text-green-600">{{ totalEarned | currency }}</div>
+            <p class="text-xs text-muted-foreground">Total income</p>
           </ui-card-content>
         </ui-card>
         <ui-card>
@@ -298,7 +323,15 @@ export class DashboardComponent implements OnInit {
   }
 
   get totalSpent(): number {
-    return this.expenses.reduce((sum, e) => sum + e.transactionAmount, 0);
+    return this.expenses
+      .filter(e => e.spent)
+      .reduce((sum, e) => sum + e.transactionAmount, 0);
+  }
+
+  get totalEarned(): number {
+    return this.expenses
+      .filter(e => !e.spent)
+      .reduce((sum, e) => sum + e.transactionAmount, 0);
   }
 
   onSpentChange(isSpent: boolean) {
@@ -318,7 +351,7 @@ export class DashboardComponent implements OnInit {
     const startOfWeek = new Date(today.getFullYear(), today.getMonth(), diff, 0, 0, 0);
 
     return this.expenses
-      .filter(e => new Date(e.date) >= startOfWeek)
+      .filter(e => e.spent && new Date(e.date) >= startOfWeek)
       .reduce((sum, e) => sum + e.transactionAmount, 0);
   }
 
