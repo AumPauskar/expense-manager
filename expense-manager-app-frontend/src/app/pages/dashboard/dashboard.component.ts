@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, CurrencyPipe, DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { ExpenseService, Expense } from '../../services/expense.service';
@@ -9,22 +9,22 @@ import { FormsModule } from '@angular/forms';
 import { UiInputComponent } from '../../components/ui/input.component';
 
 @Component({
-    selector: 'app-dashboard',
-    standalone: true,
-    imports: [
-        CommonModule,
-        UiCardComponent, // Modules
-        UiCardHeaderComponent,
-        UiCardTitleComponent,
-        UiCardDescriptionComponent,
-        UiCardContentComponent,
-        UiButtonComponent,
-        UiInputComponent,
-        FormsModule,
-        CurrencyPipe,
-        DatePipe
-    ],
-    template: `
+  selector: 'app-dashboard',
+  standalone: true,
+  imports: [
+    CommonModule,
+    UiCardComponent, // Modules
+    UiCardHeaderComponent,
+    UiCardTitleComponent,
+    UiCardDescriptionComponent,
+    UiCardContentComponent,
+    UiButtonComponent,
+    UiInputComponent,
+    FormsModule,
+    CurrencyPipe,
+    DatePipe
+  ],
+  template: `
     <div class="min-h-screen bg-background p-6 space-y-8">
       <!-- Header -->
       <div class="flex items-center justify-between">
@@ -139,95 +139,100 @@ import { UiInputComponent } from '../../components/ui/input.component';
   `,
 })
 export class DashboardComponent implements OnInit {
-    expenses: Expense[] = [];
-    currentDate = new Date();
-    username = '';
+  expenses: Expense[] = [];
+  currentDate = new Date();
+  username = '';
 
-    newExpense: Partial<Expense> = {
-        name: '',
-        transactionAmount: 0,
-        required: true,
-        cash: false,
-        spent: true
+  newExpense: Partial<Expense> = {
+    name: '',
+    transactionAmount: 0,
+    required: true,
+    cash: false,
+    spent: true
+  };
+
+  constructor(
+    private expenseService: ExpenseService,
+    private authService: AuthService,
+    private router: Router,
+    private cdr: ChangeDetectorRef
+  ) { }
+
+  ngOnInit() {
+    const user = this.authService.currentUserValue;
+    if (!user) {
+      this.router.navigate(['/login']);
+      return;
+    }
+    this.username = user.username;
+    console.log('Dashboard initialized, loading expenses for', this.username);
+    this.loadExpenses();
+  }
+
+  loadExpenses() {
+    const year = this.currentDate.getFullYear();
+    const month = this.currentDate.getMonth() + 1; // 1-indexed
+    this.expenseService.getMonthlyExpenses(year, month).subscribe({
+      next: (data) => {
+        console.log('Expenses loaded:', data);
+        this.expenses = data;
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error('Error loading expenses:', err)
+    });
+  }
+
+  changeMonth(delta: number) {
+    this.currentDate = new Date(this.currentDate.setMonth(this.currentDate.getMonth() + delta));
+    this.loadExpenses();
+  }
+
+  addExpense() {
+    if (!this.newExpense.name || !this.newExpense.transactionAmount) return;
+
+    const expense: Expense = {
+      ...this.newExpense as Expense,
+      accountId: this.authService.currentUserValue!.id,
+      date: new Date().toISOString()
     };
 
-    constructor(
-        private expenseService: ExpenseService,
-        private authService: AuthService,
-        private router: Router
-    ) { }
+    // If expense date should be in the currently selected month? 
+    // Usually user adds expense for today. If viewing past month, this might be confusing.
+    // We will stick to "Today" for new expenses for now.
 
-    ngOnInit() {
-        const user = this.authService.currentUserValue;
-        if (!user) {
-            this.router.navigate(['/login']);
-            return;
-        }
-        this.username = user.username;
-        this.loadExpenses();
-    }
-
-    loadExpenses() {
-        const year = this.currentDate.getFullYear();
-        const month = this.currentDate.getMonth() + 1; // 1-indexed
-        this.expenseService.getMonthlyExpenses(year, month).subscribe({
-            next: (data) => {
-                this.expenses = data;
-            },
-            error: (err) => console.error(err)
-        });
-    }
-
-    changeMonth(delta: number) {
-        this.currentDate = new Date(this.currentDate.setMonth(this.currentDate.getMonth() + delta));
-        this.loadExpenses();
-    }
-
-    addExpense() {
-        if (!this.newExpense.name || !this.newExpense.transactionAmount) return;
-
-        const expense: Expense = {
-            ...this.newExpense as Expense,
-            accountId: this.authService.currentUserValue!.id,
-            date: new Date().toISOString()
+    this.expenseService.addExpense(expense).subscribe({
+      next: (res) => {
+        // Clear form
+        this.newExpense = {
+          name: '',
+          transactionAmount: 0,
+          required: true,
+          cash: false,
+          spent: true
         };
+        // Refresh list if current month is "this month"
+        if (this.isCurrentMonth(this.currentDate)) {
+          this.expenses = [...this.expenses, res];
+          this.cdr.detectChanges();
+        } else {
+          // Ideally navigate to current month or show toast
+        }
+      },
+      error: (err) => console.error(err)
+    });
+  }
 
-        // If expense date should be in the currently selected month? 
-        // Usually user adds expense for today. If viewing past month, this might be confusing.
-        // We will stick to "Today" for new expenses for now.
+  logout() {
+    this.authService.logout();
+    this.router.navigate(['/login']);
+  }
 
-        this.expenseService.addExpense(expense).subscribe({
-            next: (res) => {
-                // Clear form
-                this.newExpense = {
-                    name: '',
-                    transactionAmount: 0,
-                    required: true,
-                    cash: false,
-                    spent: true
-                };
-                // Refresh list if current month is "this month"
-                if (this.isCurrentMonth(this.currentDate)) {
-                    this.expenses.push(res);
-                } else {
-                    // Ideally navigate to current month or show toast
-                }
-            },
-            error: (err) => console.error(err)
-        });
-    }
+  private isCurrentMonth(d: Date): boolean {
+    const now = new Date();
+    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+  }
 
-    logout() {
-        this.authService.logout();
-        this.router.navigate(['/login']);
-    }
-
-    private isCurrentMonth(d: Date): boolean {
-        const now = new Date();
-        return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
-    }
-
-    get totalSpent(): number {
-        return this.expenses.reduce((sum, e) => sum + e.transactionAmount, 0);
-    }
+  get totalSpent(): number {
+    return this.expenses.reduce((sum, e) => sum + e.transactionAmount, 0);
+  }
 }
