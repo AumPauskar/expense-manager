@@ -59,7 +59,8 @@
               "buildTarget": "expense-manager-app-frontend:build:production"
             },
             "development": {
-              "buildTarget": "expense-manager-app-frontend:build:development"
+              "buildTarget": "expense-manager-app-frontend:build:development",
+              "hmr": true
             }
           },
           "defaultConfiguration": "development"

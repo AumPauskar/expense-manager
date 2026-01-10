@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using ExpenseManagerApp.Application.Services;
 using ExpenseManagerApp.Domain.Entities;
+using ExpenseManagerApp.Application.DTOs;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ExpenseManagerApp.Api.Controllers
@@ -28,17 +29,21 @@ namespace ExpenseManagerApp.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddExpense([FromBody] Expense expense)
+        public async Task<IActionResult> AddExpense([FromBody] AddExpenseDto expenseDto)
         {
             if (HttpContext.Items["AccountId"] is not int accountId)
                 return Unauthorized("Please provide X-Account-Id header");
 
-            // Override AccountId from context to ensure security
-            expense.AccountId = accountId;
-            
-            // Set date to now if not provided or just rely on input
-            if (expense.Date == default)
-                expense.Date = DateTime.UtcNow;
+            var expense = new Expense
+            {
+                AccountId = accountId,
+                Name = expenseDto.Name,
+                Required = expenseDto.Required,
+                Cash = expenseDto.Cash,
+                Spent = expenseDto.Spent,
+                TransactionAmount = expenseDto.TransactionAmount,
+                Date = expenseDto.Date ?? DateTime.UtcNow
+            };
 
             await _expenseService.AddExpenseAsync(expense);
             return Ok(expense);

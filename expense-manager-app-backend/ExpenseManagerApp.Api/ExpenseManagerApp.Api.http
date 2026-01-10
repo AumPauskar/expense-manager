@@ -1,11 +1,37 @@
-@ExpenseManagerApp.Api_HostAddress = http://localhost:5214
+@baseUrl = http://localhost:5214/api
+@devUrl = http://localhost:5214/dev/api
+@accountId = 1
 
-GET {{ExpenseManagerApp.Api_HostAddress}}/weatherforecast/
-Accept: application/json
-
-### register
+### REGISTER
 POST {{baseUrl}}/Account/register?username=admin&password=admin
+Content-Type: application/json
 
 ### LOGIN
 POST {{baseUrl}}/Account/login?username=admin&password=admin
+Content-Type: application/json
 
+### GET ACCOUNT BY ID (DEV ONLY)
+GET {{devUrl}}/DevAccount/dev/account/{{accountId}}
+Accept: application/json
+
+### DELETE ACCOUNT (DEV ONLY)
+DELETE {{devUrl}}/DevAccount/dev/account/{{accountId}}?username=admin&password=admin
+
+### GET MONTHLY EXPENSES
+GET {{baseUrl}}/Expense/2026/1
+X-Account-Id: {{accountId}}
+Accept: application/json
+
+### ADD EXPENSE
+POST {{baseUrl}}/Expense
+X-Account-Id: {{accountId}}
+Content-Type: application/json
+
+{
+    "name": "Coffee",
+    "transactionAmount": 550,
+    "required": true,
+    "cash": true,
+    "spent": true,
+    "date": "2026-01-10T18:15:00Z"
+}
