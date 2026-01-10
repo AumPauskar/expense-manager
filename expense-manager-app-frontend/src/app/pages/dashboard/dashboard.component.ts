@@ -9,6 +9,7 @@ import { UiCardComponent, UiCardContentComponent, UiCardDescriptionComponent, Ui
 import { UiButtonComponent } from '../../components/ui/button.component';
 import { FormsModule } from '@angular/forms';
 import { UiInputComponent } from '../../components/ui/input.component';
+import { HlmPaginationImports } from '../../components/ui/pagination/src';
 
 @Component({
   selector: 'app-dashboard',
@@ -24,7 +25,8 @@ import { UiInputComponent } from '../../components/ui/input.component';
     UiInputComponent,
     FormsModule,
     CurrencyPipe,
-    DatePipe
+    DatePipe,
+    HlmPaginationImports
   ],
   template: `
     <div class="space-y-8">
@@ -178,25 +180,20 @@ import { UiInputComponent } from '../../components/ui/input.component';
             </div>
          </ui-card-content>
          <!-- PAGINATION CONTROLS -->
-         <div class="flex items-center justify-end space-x-2 p-4">
-            <ui-button 
-                variant="outline" 
-                size="sm" 
-                (click)="prevPage()" 
-                [disabled]="currentPage === 1">
-              Previous
-            </ui-button>
-            <div class="text-sm font-medium">
-              Page {{ currentPage }} of {{ totalPages || 1 }}
-            </div>
-            <ui-button 
-                variant="outline" 
-                size="sm" 
-                (click)="nextPage()" 
-                [disabled]="currentPage >= totalPages">
-              Next
-            </ui-button>
-         </div>
+         <nav hlmPagination class="mt-4 flex justify-end">
+           <ul hlmPaginationContent>
+             <li hlmPaginationItem>
+               <hlm-pagination-previous (click)="prevPage()" /> <!-- Assuming link input isn't strictly required if we intercept click, or we pass link="#" and prevent default -->
+             </li>
+             <li hlmPaginationItem *ngFor="let page of getVisiblePages()">
+               <a *ngIf="page !== -1" hlmPaginationLink [isActive]="currentPage === page" (click)="setPage(page)" class="cursor-pointer">{{ page }}</a>
+               <hlm-pagination-ellipsis *ngIf="page === -1" />
+             </li>
+             <li hlmPaginationItem>
+               <hlm-pagination-next (click)="nextPage()" />
+             </li>
+           </ul>
+         </nav>
       </ui-card>
     </div>
   `,
@@ -376,5 +373,33 @@ export class DashboardComponent implements OnInit {
     if (this.currentPage > 1) {
       this.currentPage--;
     }
+  }
+
+  setPage(page: number) {
+    this.currentPage = page;
+  }
+
+  getVisiblePages(): number[] {
+    const total = this.totalPages || 1;
+    const current = this.currentPage;
+    const delta = 2;
+    const range = [];
+    for (let i = Math.max(2, current - delta); i <= Math.min(total - 1, current + delta); i++) {
+      range.push(i);
+    }
+
+    if (current - delta > 2) {
+      range.unshift(-1); // -1 indicates ellipsis
+    }
+    if (current + delta < total - 1) {
+      range.push(-1);
+    }
+
+    range.unshift(1);
+    if (total !== 1) {
+      range.push(total);
+    }
+
+    return range; // Return full range including -1 for ellipsis
   }
 }
