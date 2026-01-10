@@ -210,25 +210,25 @@ export class DashboardComponent implements OnInit {
       return;
     }
     this.username = user.username;
-    console.log('Dashboard initialized, loading expenses for', this.username);
+    console.log('Dashboard initialized');
 
+    // Listen to global date changes
     this.dateService.currentDate$.subscribe(date => {
       this.currentDate = date;
       this.loadExpenses();
+    });
+
+    // Listen to expense changes (cached or new)
+    this.expenseService.expenses$.subscribe(data => {
+      this.expenses = data;
+      this.cdr.detectChanges();
     });
   }
 
   loadExpenses() {
     const year = this.currentDate.getFullYear();
     const month = this.currentDate.getMonth() + 1; // 1-indexed
-    this.expenseService.getMonthlyExpenses(year, month).subscribe({
-      next: (data) => {
-        console.log('Expenses loaded:', data);
-        this.expenses = data;
-        this.cdr.detectChanges();
-      },
-      error: (err) => console.error('Error loading expenses:', err)
-    });
+    this.expenseService.getMonthlyExpenses(year, month).subscribe();
   }
 
 
@@ -256,13 +256,6 @@ export class DashboardComponent implements OnInit {
           cash: false,
           spent: true
         };
-        // Refresh list if current month is "this month"
-        if (this.isCurrentMonth(this.currentDate)) {
-          this.expenses = [...this.expenses, res];
-          this.cdr.detectChanges();
-        } else {
-          // Ideally navigate to current month or show toast
-        }
       },
       error: (err) => console.error(err)
     });

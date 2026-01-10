@@ -184,15 +184,17 @@ export class MetricsComponent implements OnInit {
       this.currentDate = date;
       this.loadData();
     });
+
+    this.expenseService.expenses$.subscribe(expenses => {
+      this.expenses = expenses;
+      this.processData();
+    });
   }
 
   loadData() {
     const year = this.currentDate.getFullYear();
     const month = this.currentDate.getMonth() + 1;
-    this.expenseService.getMonthlyExpenses(year, month).subscribe(expenses => {
-      this.expenses = expenses;
-      this.processData();
-    });
+    this.expenseService.getMonthlyExpenses(year, month).subscribe();
   }
 
   processData() {

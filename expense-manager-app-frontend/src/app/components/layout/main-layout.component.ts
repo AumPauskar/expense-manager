@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { ThemeService, Theme } from '../../services/theme.service';
 import { AuthService } from '../../services/auth.service';
 import { DateService } from '../../services/date.service';
+import { ExpenseService } from '../../services/expense.service';
 import { UiButtonComponent } from '../ui/button.component';
 import { LucideAngularModule, Sun, Moon, Laptop } from 'lucide-angular';
 import { HlmNavigationMenuImports } from '../ui/navigation-menu/src';
@@ -83,7 +84,8 @@ export class MainLayoutComponent {
     constructor(
         public themeService: ThemeService,
         private authService: AuthService,
-        private dateService: DateService
+        private dateService: DateService,
+        private expenseService: ExpenseService
     ) {
         this.currentDate$ = this.dateService.currentDate$;
     }
@@ -101,7 +103,8 @@ export class MainLayoutComponent {
     }
 
     logout() {
+        this.expenseService.clearCache();
         this.authService.logout();
-        location.reload(); // Simple reload to clear state/redirect
+        location.reload();
     }
 }
