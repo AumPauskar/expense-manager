@@ -1,10 +1,9 @@
-<div class="space-y-8">
+<div class="space-y-6">
     <div>
         <h2 class="text-3xl font-bold tracking-tight">Metrics</h2>
         <p class="text-muted-foreground">Financial overview for {{ currentDate | date:'MMMM yyyy' }}</p>
     </div>
 
-    <!-- Stats Cards (Same as Dashboard) -->
     <!-- Stats Cards (Same as Dashboard) -->
     <app-stats-cards [totalSpent]="totalSpent" [totalEarned]="totalEarned" [spentThisWeek]="spentThisWeek"
         [averageSpent]="averageSpent" [currencyCode]="currencyCode">
