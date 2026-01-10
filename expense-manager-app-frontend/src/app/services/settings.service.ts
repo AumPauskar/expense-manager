@@ -6,6 +6,7 @@ export interface AppSettings {
     defaultCash: boolean;
     defaultSpent: boolean;
     currencyCode: string;
+    pageSize: number;
 }
 
 @Injectable({
@@ -18,7 +19,8 @@ export class SettingsService {
         defaultRequired: true,
         defaultCash: true,
         defaultSpent: true,
-        currencyCode: 'USD'
+        currencyCode: 'USD',
+        pageSize: 10
     };
 
     private settingsSubject = new BehaviorSubject<AppSettings>(this.loadSettings());

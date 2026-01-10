@@ -156,7 +156,7 @@ import { UiInputComponent } from '../../components/ui/input.component';
                   </tr>
                 </thead>
                 <tbody>
-                  <tr *ngFor="let expense of expenses" class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+                  <tr *ngFor="let expense of paginatedExpenses" class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
                     <td class="p-4 align-middle">{{ expense.date | date:'mediumDate' }}</td>
                     <td class="p-4 align-middle font-medium">{{ expense.name }}</td>
 
@@ -177,6 +177,26 @@ import { UiInputComponent } from '../../components/ui/input.component';
               </table>
             </div>
          </ui-card-content>
+         <!-- PAGINATION CONTROLS -->
+         <div class="flex items-center justify-end space-x-2 p-4">
+            <ui-button 
+                variant="outline" 
+                size="sm" 
+                (click)="prevPage()" 
+                [disabled]="currentPage === 1">
+              Previous
+            </ui-button>
+            <div class="text-sm font-medium">
+              Page {{ currentPage }} of {{ totalPages || 1 }}
+            </div>
+            <ui-button 
+                variant="outline" 
+                size="sm" 
+                (click)="nextPage()" 
+                [disabled]="currentPage >= totalPages">
+              Next
+            </ui-button>
+         </div>
       </ui-card>
     </div>
   `,
@@ -188,6 +208,10 @@ export class DashboardComponent implements OnInit {
 
   newExpense: Partial<Expense> = {};
   currencyCode = 'USD';
+
+  // Pagination
+  currentPage = 1;
+  pageSize = 10;
 
   constructor(
     private expenseService: ExpenseService,
@@ -214,6 +238,8 @@ export class DashboardComponent implements OnInit {
     // Listen to settings changes
     this.settingsService.settings$.subscribe(settings => {
       this.currencyCode = settings.currencyCode;
+      this.pageSize = settings.pageSize;
+      this.currentPage = 1; // Reset to first page when settings change
     });
 
     // Listen to global date changes
@@ -328,5 +354,27 @@ export class DashboardComponent implements OnInit {
     }
 
     return this.totalSpent / (days || 1);
+  }
+
+  // Pagination Helpers
+  get paginatedExpenses(): Expense[] {
+    const startIndex = (this.currentPage - 1) * this.pageSize;
+    return this.expenses.slice(startIndex, startIndex + this.pageSize);
+  }
+
+  get totalPages(): number {
+    return Math.ceil(this.expenses.length / this.pageSize);
+  }
+
+  nextPage() {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+    }
+  }
+
+  prevPage() {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+    }
   }
 }

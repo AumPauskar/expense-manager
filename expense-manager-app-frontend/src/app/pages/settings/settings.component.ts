@@ -94,6 +94,25 @@ import { UiCardComponent, UiCardContentComponent, UiCardDescriptionComponent, Ui
               <option value="AUD">AUD ($)</option>
             </select>
           </div>
+
+          <div class="flex items-center justify-between rounded-lg border p-4">
+            <div class="space-y-0.5">
+              <label class="text-base font-medium">Entries per Page</label>
+              <p class="text-sm text-muted-foreground">
+                Number of expenses to show per page on the dashboard.
+              </p>
+            </div>
+            <select [(ngModel)]="settings.pageSize" 
+                    (change)="save()"
+                    class="flex h-10 w-[180px] rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
+              <option [ngValue]="5">5</option>
+              <option [ngValue]="10">10</option>
+              <option [ngValue]="20">20</option>
+              <option [ngValue]="50">50</option>
+              <option [ngValue]="100">100</option>
+              <option [ngValue]="200">200</option>
+            </select>
+          </div>
         </ui-card-content>
       </ui-card>
     </div>
@@ -104,7 +123,8 @@ export class SettingsComponent implements OnInit {
     defaultRequired: true,
     defaultCash: false,
     defaultSpent: true,
-    currencyCode: 'USD'
+    currencyCode: 'USD',
+    pageSize: 10
   };
 
   constructor(private settingsService: SettingsService) { }
