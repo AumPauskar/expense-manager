@@ -11,19 +11,19 @@ import { LucideAngularModule, Sun, Moon, Laptop } from 'lucide-angular';
 import { HlmNavigationMenuImports } from '../ui/navigation-menu/src';
 
 @Component({
-    selector: 'app-main-layout',
-    standalone: true,
-    imports: [
-        CommonModule,
-        RouterOutlet,
-        RouterLink,
-        RouterLinkActive,
-        UiButtonComponent,
-        DatePipe,
-        LucideAngularModule,
-        ...HlmNavigationMenuImports
-    ],
-    template: `
+  selector: 'app-main-layout',
+  standalone: true,
+  imports: [
+    CommonModule,
+    RouterOutlet,
+    RouterLink,
+    RouterLinkActive,
+    UiButtonComponent,
+    DatePipe,
+    LucideAngularModule,
+    ...HlmNavigationMenuImports
+  ],
+  template: `
     <div class="min-h-screen bg-background p-6 space-y-8">
       <!-- Header -->
       <div class="flex items-center justify-between border-b pb-4">
@@ -41,6 +41,11 @@ import { HlmNavigationMenuImports } from '../ui/navigation-menu/src';
              <li hlmNavigationMenuItem>
                 <a hlmNavigationMenuLink routerLink="/metrics" routerLinkActive="bg-accent text-accent-foreground" class="w-full text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50">
                   Metrics
+                </a>
+             </li>
+             <li hlmNavigationMenuItem>
+                <a hlmNavigationMenuLink routerLink="/timemachine" routerLinkActive="bg-accent text-accent-foreground" class="w-full text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50">
+                  Time Machine
                 </a>
              </li>
              <li hlmNavigationMenuItem>
@@ -79,32 +84,32 @@ import { HlmNavigationMenuImports } from '../ui/navigation-menu/src';
   `
 })
 export class MainLayoutComponent {
-    currentDate$: Observable<Date>;
+  currentDate$: Observable<Date>;
 
-    constructor(
-        public themeService: ThemeService,
-        private authService: AuthService,
-        private dateService: DateService,
-        private expenseService: ExpenseService
-    ) {
-        this.currentDate$ = this.dateService.currentDate$;
-    }
+  constructor(
+    public themeService: ThemeService,
+    private authService: AuthService,
+    private dateService: DateService,
+    private expenseService: ExpenseService
+  ) {
+    this.currentDate$ = this.dateService.currentDate$;
+  }
 
-    get currentTheme() {
-        return this.themeService.currentTheme;
-    }
+  get currentTheme() {
+    return this.themeService.currentTheme;
+  }
 
-    setTheme(t: Theme) {
-        this.themeService.setTheme(t);
-    }
+  setTheme(t: Theme) {
+    this.themeService.setTheme(t);
+  }
 
-    changeMonth(delta: number) {
-        this.dateService.changeMonth(delta);
-    }
+  changeMonth(delta: number) {
+    this.dateService.changeMonth(delta);
+  }
 
-    logout() {
-        this.expenseService.clearCache();
-        this.authService.logout();
-        location.reload();
-    }
+  logout() {
+    this.expenseService.clearCache();
+    this.authService.logout();
+    location.reload();
+  }
 }

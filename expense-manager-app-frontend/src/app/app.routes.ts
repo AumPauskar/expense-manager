@@ -10,7 +10,8 @@ export const routes: Routes = [
             { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
             { path: 'dashboard', loadComponent: () => import('./pages/dashboard/dashboard.component').then(m => m.DashboardComponent) },
             { path: 'metrics', loadComponent: () => import('./pages/metrics/metrics.component').then(m => m.MetricsComponent) },
-            { path: 'settings', loadComponent: () => import('./pages/settings/settings.component').then(m => m.SettingsComponent) }
+            { path: 'settings', loadComponent: () => import('./pages/settings/settings.component').then(m => m.SettingsComponent) },
+            { path: 'timemachine', loadComponent: () => import('./pages/timemachine/timemachine.component').then(m => m.TimeMachineComponent) }
         ],
         canActivate: [] // Ideally AuthGuard here
     },
