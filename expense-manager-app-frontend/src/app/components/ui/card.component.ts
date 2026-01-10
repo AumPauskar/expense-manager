@@ -37,7 +37,7 @@ export class UiCardHeaderComponent {
   imports: [CommonModule],
   host: { class: 'block' },
   template: `
-    <h3 [class]="'font-semibold leading-none tracking-tight ' + class">
+    <h3 [class]="'m-0 font-semibold leading-snug tracking-tight ' + class">
       <ng-content></ng-content>
     </h3>
   `,
