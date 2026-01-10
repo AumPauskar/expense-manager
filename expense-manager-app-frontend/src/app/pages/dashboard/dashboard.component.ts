@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { ExpenseService, Expense } from '../../services/expense.service';
 import { DateService } from '../../services/date.service';
 import { AuthService } from '../../services/auth.service';
+import { SettingsService } from '../../services/settings.service';
 import { UiCardComponent, UiCardContentComponent, UiCardDescriptionComponent, UiCardHeaderComponent, UiCardTitleComponent } from '../../components/ui/card.component';
 import { UiButtonComponent } from '../../components/ui/button.component';
 import { FormsModule } from '@angular/forms';
@@ -185,21 +186,18 @@ export class DashboardComponent implements OnInit {
   currentDate = new Date();
   username = '';
 
-  newExpense: Partial<Expense> = {
-    name: '',
-    transactionAmount: 0,
-    required: false,
-    cash: false,
-    spent: true
-  };
+  newExpense: Partial<Expense> = {};
 
   constructor(
     private expenseService: ExpenseService,
     private authService: AuthService,
     private router: Router,
     private cdr: ChangeDetectorRef,
-    private dateService: DateService
-  ) { }
+    private dateService: DateService,
+    private settingsService: SettingsService
+  ) {
+    this.resetNewExpense();
+  }
 
 
 
@@ -249,16 +247,22 @@ export class DashboardComponent implements OnInit {
     this.expenseService.addExpense(expense).subscribe({
       next: (res) => {
         // Clear form
-        this.newExpense = {
-          name: '',
-          transactionAmount: 0,
-          required: false,
-          cash: false,
-          spent: false
-        };
+        // Clear form
+        this.resetNewExpense();
       },
       error: (err) => console.error(err)
     });
+  }
+
+  resetNewExpense() {
+    const settings = this.settingsService.settings;
+    this.newExpense = {
+      name: '',
+      transactionAmount: 0,
+      required: settings.defaultRequired,
+      cash: settings.defaultCash,
+      spent: settings.defaultSpent
+    };
   }
 
 
