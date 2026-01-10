@@ -1,5 +1,3 @@
-import { HlmNumberedPagination } from './lib/hlm-numbered-pagination';
-import { HlmNumberedPaginationQueryParams } from './lib/hlm-numbered-pagination-query-params';
 import { HlmPagination } from './lib/hlm-pagination';
 import { HlmPaginationContent } from './lib/hlm-pagination-content';
 import { HlmPaginationEllipsis } from './lib/hlm-pagination-ellipsis';

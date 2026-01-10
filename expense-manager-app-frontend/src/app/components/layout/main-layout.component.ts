@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
-import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
+import { RouterOutlet, RouterLink, RouterLinkActive, Router, NavigationEnd } from '@angular/router';
+import { filter, map, startWith } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { ThemeService, Theme } from '../../services/theme.service';
 import { AuthService } from '../../services/auth.service';
@@ -66,7 +67,7 @@ import { HlmNavigationMenuImports } from '../ui/navigation-menu/src';
             </div>
 
             <!-- Month Picker -->
-           <div class="flex items-center gap-2 bg-card border rounded-md p-1">
+           <div *ngIf="showMonthPicker$ | async" class="flex items-center gap-2 bg-card border rounded-md p-1">
              <button class="px-2 hover:bg-muted rounded" (click)="changeMonth(-1)">←</button>
              <span class="font-medium min-w-[100px] text-center">{{ currentDate$ | async | date:'MMMM yyyy' }}</span>
              <button class="px-2 hover:bg-muted rounded" (click)="changeMonth(1)">→</button>
@@ -85,14 +86,22 @@ import { HlmNavigationMenuImports } from '../ui/navigation-menu/src';
 })
 export class MainLayoutComponent {
   currentDate$: Observable<Date>;
+  showMonthPicker$: Observable<boolean>;
 
   constructor(
     public themeService: ThemeService,
     private authService: AuthService,
     private dateService: DateService,
-    private expenseService: ExpenseService
+    private expenseService: ExpenseService,
+    private router: Router
   ) {
     this.currentDate$ = this.dateService.currentDate$;
+    this.showMonthPicker$ = this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd),
+      map(event => !(event as NavigationEnd).urlAfterRedirects.includes('/settings')),
+      startWith(!this.router.url.includes('/settings'))
+    );
+
   }
 
   get currentTheme() {
