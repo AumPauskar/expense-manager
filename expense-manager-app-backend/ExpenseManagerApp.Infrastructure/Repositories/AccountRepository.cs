@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using ExpenseManagerApp.Domain.Entities;
 using ExpenseManagerApp.Domain.Interfaces;
 using ExpenseManagerApp.Infrastructure.Data;
@@ -15,12 +14,12 @@ namespace ExpenseManagerApp.Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task<Account> GetByUsernameAsync(string username)
+        public async Task<Account?> GetByUsernameAsync(string username)
         {
             return await _context.Accounts.FirstOrDefaultAsync(a => a.Username == username);
         }
 
-        public async Task<Account> GetByIdAsync(int id)
+        public async Task<Account?> GetByIdAsync(int id)
         {
             return await _context.Accounts.FindAsync(id);
         }
@@ -29,6 +28,16 @@ namespace ExpenseManagerApp.Infrastructure.Repositories
         {
             _context.Accounts.Add(account);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task DeleteAsync(int id)
+        {
+            var account = await _context.Accounts.FindAsync(id);
+            if (account != null)
+            {
+                _context.Accounts.Remove(account);
+                await _context.SaveChangesAsync();
+            }
         }
     }
 }

@@ -39,4 +39,36 @@ namespace ExpenseManagerApp.Api.Controllers
             return Ok(account);
         }
     }
+
+    [ApiController]
+    [Route("dev/api/[controller]")]
+    public class DevAccountController : ControllerBase
+    {
+        private readonly AccountService _accountService;
+
+        public DevAccountController(AccountService accountService)
+        {
+            _accountService = accountService;
+        }
+
+        [HttpGet("dev/account/{id}")]
+        public async Task<IActionResult> GetAccountById(int id)
+        {
+            var account = await _accountService.GetByIdAsync(id);
+            if (account == null)
+                return NotFound("Account not found");
+
+            return Ok(account);
+        }
+
+        [HttpDelete("dev/account/{id}")]
+        public async Task<IActionResult> DeleteAccountById(int id, string username, string password)
+        {
+            var account = await _accountService.DeleteAsync(id, username, password);
+            if (account == null)
+                return NotFound("Account not found or invalid credentials");
+
+            return Ok($"Account with ID {id} deleted.");
+        }
+    }
 }

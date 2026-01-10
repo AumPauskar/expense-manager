@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using ExpenseManagerApp.Domain.Entities;
 using ExpenseManagerApp.Domain.Interfaces;
 using ExpenseManagerApp.Infrastructure.Data;

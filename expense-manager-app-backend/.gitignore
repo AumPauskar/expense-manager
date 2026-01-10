@@ -31,3 +31,7 @@ x86/
 Thumbs.db
 ehthumbs.db
 Desktop.ini
+
+# Devlopment
+.vscode/
+.idea/

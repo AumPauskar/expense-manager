@@ -3,4 +3,9 @@
 GET {{ExpenseManagerApp.Api_HostAddress}}/weatherforecast/
 Accept: application/json
 
-###
+### register
+POST {{baseUrl}}/Account/register?username=admin&password=admin
+
+### LOGIN
+POST {{baseUrl}}/Account/login?username=admin&password=admin
+
