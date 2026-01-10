@@ -12,6 +12,8 @@ import { UiInputComponent } from '../../components/ui/input.component';
 import { HlmPaginationImports } from '../../components/ui/pagination/src';
 import { StatsCardsComponent } from '../../components/stats-cards/stats-cards.component';
 
+import { toast } from 'ngx-sonner';
+
 @Component({
   selector: 'app-dashboard',
   standalone: true,
@@ -110,11 +112,14 @@ export class DashboardComponent implements OnInit {
 
     this.expenseService.addExpense(expense).subscribe({
       next: (res) => {
-        // Clear form
+        toast.success('Expense added successfully!');
         // Clear form
         this.resetNewExpense();
       },
-      error: (err) => console.error(err)
+      error: (err) => {
+        toast.error('Failed to add expense');
+        console.error(err);
+      }
     });
   }
 

@@ -1,9 +1,10 @@
 import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { HlmToasterImports } from './components/ui/sonner/src';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, ...HlmToasterImports],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
