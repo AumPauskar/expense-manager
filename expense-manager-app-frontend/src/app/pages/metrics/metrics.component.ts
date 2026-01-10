@@ -5,6 +5,7 @@ import { ChartConfiguration, ChartData, ChartEvent, ChartType, Chart } from 'cha
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { DateService } from '../../services/date.service';
 import { ExpenseService, Expense } from '../../services/expense.service';
+import { SettingsService } from '../../services/settings.service';
 import { UiCardComponent, UiCardContentComponent, UiCardHeaderComponent, UiCardTitleComponent } from '../../components/ui/card.component';
 
 
@@ -36,7 +37,7 @@ import { UiCardComponent, UiCardContentComponent, UiCardHeaderComponent, UiCardT
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 text-muted-foreground"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" /></svg>
           </ui-card-header>
           <ui-card-content>
-            <div class="text-2xl font-bold text-red-600">{{ totalSpent | currency }}</div>
+            <div class="text-2xl font-bold text-red-600">{{ totalSpent | currency:currencyCode }}</div>
             <p class="text-xs text-muted-foreground">Actual expenses</p>
           </ui-card-content>
         </ui-card>
@@ -47,7 +48,7 @@ import { UiCardComponent, UiCardContentComponent, UiCardHeaderComponent, UiCardT
              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 text-muted-foreground"><path d="m12 19 7-7 3 3-7 7-3-3z"/><path d="m18 13-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="m2 2 20 20"/><path d="m8 8 4 4 2-2"/></svg>
           </ui-card-header>
           <ui-card-content>
-            <div class="text-2xl font-bold text-green-600">{{ totalEarned | currency }}</div>
+            <div class="text-2xl font-bold text-green-600">{{ totalEarned | currency:currencyCode }}</div>
             <p class="text-xs text-muted-foreground">Total income</p>
           </ui-card-content>
         </ui-card>
@@ -58,7 +59,7 @@ import { UiCardComponent, UiCardContentComponent, UiCardHeaderComponent, UiCardT
              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 text-muted-foreground"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/><path d="M16 18h.01"/></svg>
           </ui-card-header>
           <ui-card-content>
-            <div class="text-2xl font-bold">{{ spentThisWeek | currency }}</div>
+            <div class="text-2xl font-bold">{{ spentThisWeek | currency:currencyCode }}</div>
             <p class="text-xs text-muted-foreground">Mon - Today</p>
           </ui-card-content>
         </ui-card>
@@ -69,7 +70,7 @@ import { UiCardComponent, UiCardContentComponent, UiCardHeaderComponent, UiCardT
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 text-muted-foreground"><path d="M12 2v20"/><path d="M21 12H3"/><circle cx="12" cy="12" r="10"/></svg>
           </ui-card-header>
           <ui-card-content>
-            <div class="text-2xl font-bold">{{ averageSpent | currency }}</div>
+            <div class="text-2xl font-bold">{{ averageSpent | currency:currencyCode }}</div>
             <p class="text-xs text-muted-foreground">Per day this month</p>
           </ui-card-content>
         </ui-card>
@@ -138,6 +139,7 @@ import { UiCardComponent, UiCardContentComponent, UiCardHeaderComponent, UiCardT
 export class MetricsComponent implements OnInit {
   currentDate = new Date();
   expenses: Expense[] = [];
+  currencyCode = 'USD';
 
   public barChartOptions: ChartConfiguration['options'] = {
     responsive: true,
@@ -147,7 +149,7 @@ export class MetricsComponent implements OnInit {
       datalabels: {
         anchor: 'end',
         align: 'top',
-        formatter: (value: any) => value > 0 ? '$' + value.toFixed(2) : '',
+        formatter: (value: any) => value > 0 ? new Intl.NumberFormat(undefined, { style: 'currency', currency: this.currencyCode }).format(value) : '',
         font: { weight: 'bold' }
       }
     }
@@ -160,7 +162,7 @@ export class MetricsComponent implements OnInit {
       datalabels: {
         anchor: 'end',
         align: 'top',
-        formatter: (value: any) => value > 0 ? '$' + value.toFixed(2) : '',
+        formatter: (value: any) => value > 0 ? new Intl.NumberFormat(undefined, { style: 'currency', currency: this.currencyCode }).format(value) : '',
         font: { weight: 'bold' }
       }
     }
@@ -174,12 +176,17 @@ export class MetricsComponent implements OnInit {
 
   constructor(
     private dateService: DateService,
-    private expenseService: ExpenseService
+    private expenseService: ExpenseService,
+    private settingsService: SettingsService
   ) {
     Chart.register(ChartDataLabels);
   }
 
   ngOnInit() {
+    this.settingsService.settings$.subscribe(settings => {
+      this.currencyCode = settings.currencyCode;
+    });
+
     this.dateService.currentDate$.subscribe(date => {
       this.currentDate = date;
       this.loadData();

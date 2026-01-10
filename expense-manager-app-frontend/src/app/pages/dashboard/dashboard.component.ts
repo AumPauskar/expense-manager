@@ -55,7 +55,7 @@ import { UiInputComponent } from '../../components/ui/input.component';
             </svg>
           </ui-card-header>
           <ui-card-content>
-            <div class="text-2xl font-bold text-red-600">{{ totalSpent | currency }}</div>
+            <div class="text-2xl font-bold text-red-600">{{ totalSpent | currency:currencyCode }}</div>
             <p class="text-xs text-muted-foreground">Actual expenses</p>
           </ui-card-content>
         </ui-card>
@@ -80,7 +80,7 @@ import { UiInputComponent } from '../../components/ui/input.component';
             </svg>
           </ui-card-header>
           <ui-card-content>
-            <div class="text-2xl font-bold text-green-600">{{ totalEarned | currency }}</div>
+            <div class="text-2xl font-bold text-green-600">{{ totalEarned | currency:currencyCode }}</div>
             <p class="text-xs text-muted-foreground">Total income</p>
           </ui-card-content>
         </ui-card>
@@ -90,7 +90,7 @@ import { UiInputComponent } from '../../components/ui/input.component';
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 text-muted-foreground"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/><path d="M16 18h.01"/></svg>
           </ui-card-header>
           <ui-card-content>
-            <div class="text-2xl font-bold">{{ spentThisWeek | currency }}</div>
+            <div class="text-2xl font-bold">{{ spentThisWeek | currency:currencyCode }}</div>
             <p class="text-xs text-muted-foreground">Mon - Today</p>
           </ui-card-content>
         </ui-card>
@@ -101,7 +101,7 @@ import { UiInputComponent } from '../../components/ui/input.component';
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 text-muted-foreground"><path d="M12 2v20"/><path d="M21 12H3"/><circle cx="12" cy="12" r="10"/></svg>
           </ui-card-header>
           <ui-card-content>
-            <div class="text-2xl font-bold">{{ averageSpent | currency }}</div>
+            <div class="text-2xl font-bold">{{ averageSpent | currency:currencyCode }}</div>
             <p class="text-xs text-muted-foreground">Per day this month</p>
           </ui-card-content>
         </ui-card>
@@ -167,7 +167,7 @@ import { UiInputComponent } from '../../components/ui/input.component';
                           'text-green-600': !expense.spent,
                           'text-amber-600': expense.spent && expense.required
                         }">
-                      {{ expense.transactionAmount | currency }}
+                      {{ expense.transactionAmount | currency:currencyCode }}
                     </td>
                   </tr>
                    <tr *ngIf="expenses.length === 0">
@@ -187,6 +187,7 @@ export class DashboardComponent implements OnInit {
   username = '';
 
   newExpense: Partial<Expense> = {};
+  currencyCode = 'USD';
 
   constructor(
     private expenseService: ExpenseService,
@@ -209,6 +210,11 @@ export class DashboardComponent implements OnInit {
     }
     this.username = user.username;
     console.log('Dashboard initialized');
+
+    // Listen to settings changes
+    this.settingsService.settings$.subscribe(settings => {
+      this.currencyCode = settings.currencyCode;
+    });
 
     // Listen to global date changes
     this.dateService.currentDate$.subscribe(date => {

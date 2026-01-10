@@ -69,6 +69,33 @@ import { UiCardComponent, UiCardContentComponent, UiCardDescriptionComponent, Ui
           </div>
         </ui-card-content>
       </ui-card>
+      <ui-card>
+        <ui-card-header>
+          <ui-card-title>Display Settings</ui-card-title>
+          <ui-card-description>Customize how your financial data is presented.</ui-card-description>
+        </ui-card-header>
+        <ui-card-content class="space-y-4">
+          <div class="flex items-center justify-between rounded-lg border p-4">
+            <div class="space-y-0.5">
+              <label class="text-base font-medium">Currency</label>
+              <p class="text-sm text-muted-foreground">
+                Select the currency symbol used across the dashboard.
+              </p>
+            </div>
+            <select [(ngModel)]="settings.currencyCode" 
+                    (change)="save()"
+                    class="flex h-10 w-[180px] rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
+              <option value="USD">USD ($)</option>
+              <option value="EUR">EUR (€)</option>
+              <option value="GBP">GBP (£)</option>
+              <option value="JPY">JPY (¥)</option>
+              <option value="INR">INR (₹)</option>
+              <option value="CAD">CAD ($)</option>
+              <option value="AUD">AUD ($)</option>
+            </select>
+          </div>
+        </ui-card-content>
+      </ui-card>
     </div>
   `,
 })
@@ -76,7 +103,8 @@ export class SettingsComponent implements OnInit {
   settings: AppSettings = {
     defaultRequired: true,
     defaultCash: false,
-    defaultSpent: true
+    defaultSpent: true,
+    currencyCode: 'USD'
   };
 
   constructor(private settingsService: SettingsService) { }
