@@ -115,6 +115,7 @@ export class DashboardComponent implements OnInit {
         toast.success('Expense added successfully!');
         // Clear form
         this.resetNewExpense();
+        this.cdr.detectChanges();
       },
       error: (err) => {
         toast.error('Failed to add expense');
@@ -127,7 +128,7 @@ export class DashboardComponent implements OnInit {
     const settings = this.settingsService.settings;
     this.newExpense = {
       name: '',
-      transactionAmount: 0,
+      transactionAmount: undefined,
       required: settings.defaultRequired,
       cash: settings.defaultCash,
       spent: settings.defaultSpent

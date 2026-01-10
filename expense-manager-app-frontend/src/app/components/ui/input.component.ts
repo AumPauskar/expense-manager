@@ -36,7 +36,7 @@ export class UiInputComponent implements ControlValueAccessor {
     onTouched: any = () => { };
 
     writeValue(value: any): void {
-        this.value = value || '';
+        this.value = (value === null || value === undefined) ? '' : value;
     }
 
     registerOnChange(fn: any): void {
