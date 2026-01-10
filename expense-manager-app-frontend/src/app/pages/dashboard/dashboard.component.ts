@@ -1,8 +1,8 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { ThemeService, Theme } from '../../services/theme.service';
 import { CommonModule, CurrencyPipe, DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { ExpenseService, Expense } from '../../services/expense.service';
+import { DateService } from '../../services/date.service';
 import { AuthService } from '../../services/auth.service';
 import { UiCardComponent, UiCardContentComponent, UiCardDescriptionComponent, UiCardHeaderComponent, UiCardTitleComponent } from '../../components/ui/card.component';
 import { UiButtonComponent } from '../../components/ui/button.component';
@@ -28,49 +28,11 @@ import { UiInputComponent } from '../../components/ui/input.component';
   template: `
     <div class="min-h-screen bg-background p-6 space-y-8">
       <!-- Header -->
+      <!-- Header -->
       <div class="flex items-center justify-between">
         <div>
           <h2 class="text-3xl font-bold tracking-tight">Dashboard</h2>
           <p class="text-muted-foreground">Welcome back, {{ username }}</p>
-        </div>
-        <div class="flex items-center gap-2">
-            <!-- Theme Toggle -->
-            <div class="flex items-center border rounded-md p-1 bg-card mr-2">
-              <button
-                (click)="setTheme('light')"
-                [class.text-primary]="currentTheme() === 'light'"
-                [class.text-muted-foreground]="currentTheme() !== 'light'"
-                class="p-1.5 hover:bg-muted rounded-md transition-colors"
-                title="Light Mode"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 22v2"/><path d="M20 12h2"/><path d="M2 12h2"/><path d="m19.07 4.93-1.41 1.41"/><path d="M19.07 19.07l-1.41-1.41"/><path d="M4.93 19.07l1.41-1.41"/><path d="M4.93 4.93l1.41 1.41"/></svg>
-              </button>
-              <button
-                (click)="setTheme('dark')"
-                [class.text-primary]="currentTheme() === 'dark'"
-                [class.text-muted-foreground]="currentTheme() !== 'dark'"
-                class="p-1.5 hover:bg-muted rounded-md transition-colors"
-                title="Dark Mode"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
-              </button>
-              <button
-                (click)="setTheme('system')"
-                [class.text-primary]="currentTheme() === 'system'"
-                [class.text-muted-foreground]="currentTheme() !== 'system'"
-                class="p-1.5 hover:bg-muted rounded-md transition-colors"
-                title="System Theme"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/></svg>
-              </button>
-            </div>
-
-          <div class="flex items-center gap-2 bg-card border rounded-md p-1">
-             <button class="px-2" (click)="changeMonth(-1)">←</button>
-             <span class="font-medium">{{ currentDate | date:'MMMM yyyy' }}</span>
-             <button class="px-2" (click)="changeMonth(1)">→</button>
-          </div>
-          <ui-button (click)="logout()" variant="outline">Logout</ui-button>
         </div>
       </div>
 
@@ -237,16 +199,10 @@ export class DashboardComponent implements OnInit {
     private authService: AuthService,
     private router: Router,
     private cdr: ChangeDetectorRef,
-    public themeService: ThemeService
+    private dateService: DateService
   ) { }
 
-  get currentTheme() {
-    return this.themeService.currentTheme;
-  }
 
-  setTheme(t: Theme) {
-    this.themeService.setTheme(t);
-  }
 
   ngOnInit() {
     const user = this.authService.currentUserValue;
@@ -256,7 +212,11 @@ export class DashboardComponent implements OnInit {
     }
     this.username = user.username;
     console.log('Dashboard initialized, loading expenses for', this.username);
-    this.loadExpenses();
+
+    this.dateService.currentDate$.subscribe(date => {
+      this.currentDate = date;
+      this.loadExpenses();
+    });
   }
 
   loadExpenses() {
@@ -272,10 +232,7 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  changeMonth(delta: number) {
-    this.currentDate = new Date(this.currentDate.setMonth(this.currentDate.getMonth() + delta));
-    this.loadExpenses();
-  }
+
 
   addExpense() {
     if (!this.newExpense.name || !this.newExpense.transactionAmount) return;
@@ -312,10 +269,7 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  logout() {
-    this.authService.logout();
-    this.router.navigate(['/login']);
-  }
+
 
   private isCurrentMonth(d: Date): boolean {
     const now = new Date();
