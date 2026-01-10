@@ -33,7 +33,7 @@ import { UiCardComponent, UiCardContentComponent, UiCardDescriptionComponent, Ui
             <div class="space-y-0.5">
               <label class="text-base font-medium">Default Required</label>
               <p class="text-sm text-muted-foreground">
-                Set the "Required" checkbox to checked by default.
+                Set the state for default checkbox "Required". Ideal if you want to differentiate between essential and non-essential expenses.
               </p>
             </div>
             <input type="checkbox" 
@@ -46,7 +46,7 @@ import { UiCardComponent, UiCardContentComponent, UiCardDescriptionComponent, Ui
             <div class="space-y-0.5">
               <label class="text-base font-medium">Default Cash</label>
               <p class="text-sm text-muted-foreground">
-                 Set the "Cash" checkbox to checked by default.
+                 Set the state for default checkbox "Cash". Button best used if you want to differentiate between cash and online expenses.
               </p>
             </div>
              <input type="checkbox" 
@@ -59,7 +59,7 @@ import { UiCardComponent, UiCardContentComponent, UiCardDescriptionComponent, Ui
              <div class="space-y-0.5">
               <label class="text-base font-medium">Default Spent</label>
               <p class="text-sm text-muted-foreground">
-                 Set the "Spent" checkbox to checked by default.
+                 Set the state for default checkbox "Spent". Button used to differentiate money going out from your bank account and money going into your bank account.
               </p>
             </div>
              <input type="checkbox" 
