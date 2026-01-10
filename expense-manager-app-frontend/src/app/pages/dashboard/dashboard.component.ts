@@ -84,14 +84,14 @@ import { UiInputComponent } from '../../components/ui/input.component';
            </div>
             <div class="flex items-center gap-2 pb-2">
                <!-- Checkboxes mimicking shadcn switch/checkbox roughly -->
-               <label class="flex items-center gap-2 text-sm">
-                 <input type="checkbox" [(ngModel)]="newExpense.required" class="accent-primary rounded" /> Required
+               <label class="flex items-center gap-2 text-sm" [class.opacity-50]="!newExpense.spent">
+                 <input type="checkbox" [(ngModel)]="newExpense.required" [disabled]="!newExpense.spent" class="accent-primary rounded" /> Required
                </label>
                <label class="flex items-center gap-2 text-sm">
                  <input type="checkbox" [(ngModel)]="newExpense.cash" class="accent-primary rounded" /> Cash
                </label>
                <label class="flex items-center gap-2 text-sm">
-                 <input type="checkbox" [(ngModel)]="newExpense.spent" class="accent-primary rounded" /> Spent
+                 <input type="checkbox" [(ngModel)]="newExpense.spent" (ngModelChange)="onSpentChange($event)" class="accent-primary rounded" /> Spent
                </label>
             </div>
            <ui-button (click)="addExpense()">Add</ui-button>
@@ -111,7 +111,7 @@ import { UiInputComponent } from '../../components/ui/input.component';
                   <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
                     <th class="h-12 px-4 align-middle font-medium">Date</th>
                     <th class="h-12 px-4 align-middle font-medium">Name</th>
-                    <th class="h-12 px-4 align-middle font-medium">Status</th>
+
                      <th class="h-12 px-4 align-middle font-medium">Type</th>
                     <th class="h-12 px-4 align-middle font-medium text-right">Amount</th>
                   </tr>
@@ -120,15 +120,19 @@ import { UiInputComponent } from '../../components/ui/input.component';
                   <tr *ngFor="let expense of expenses" class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
                     <td class="p-4 align-middle">{{ expense.date | date:'mediumDate' }}</td>
                     <td class="p-4 align-middle font-medium">{{ expense.name }}</td>
-                    <td class="p-4 align-middle">
-                        <span *ngIf="expense.spent" class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80">Paid</span>
-                        <span *ngIf="!expense.spent" class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80">Pending</span>
-                    </td>
+
                     <td class="p-4 align-middle">{{ expense.cash ? 'Cash' : 'Online' }}</td>
-                    <td class="p-4 align-middle text-right">{{ expense.transactionAmount | currency }}</td>
+                    <td class="p-4 align-middle text-right"
+                        [ngClass]="{
+                          'text-red-600': expense.spent && !expense.required,
+                          'text-green-600': !expense.spent,
+                          'text-amber-600': expense.spent && expense.required
+                        }">
+                      {{ expense.transactionAmount | currency }}
+                    </td>
                   </tr>
                    <tr *ngIf="expenses.length === 0">
-                      <td colspan="5" class="p-4 text-center text-muted-foreground">No expenses found for this month.</td>
+                      <td colspan="4" class="p-4 text-center text-muted-foreground">No expenses found for this month.</td>
                    </tr>
                 </tbody>
               </table>
@@ -234,5 +238,12 @@ export class DashboardComponent implements OnInit {
 
   get totalSpent(): number {
     return this.expenses.reduce((sum, e) => sum + e.transactionAmount, 0);
+  }
+
+  onSpentChange(isSpent: boolean) {
+    if (!isSpent) {
+      // If not spent (Pending), required must be true as per logic
+      this.newExpense.required = true;
+    }
   }
 }
