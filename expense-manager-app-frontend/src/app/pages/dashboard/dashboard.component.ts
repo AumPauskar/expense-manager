@@ -188,7 +188,7 @@ export class DashboardComponent implements OnInit {
   newExpense: Partial<Expense> = {
     name: '',
     transactionAmount: 0,
-    required: true,
+    required: false,
     cash: false,
     spent: true
   };
@@ -252,9 +252,9 @@ export class DashboardComponent implements OnInit {
         this.newExpense = {
           name: '',
           transactionAmount: 0,
-          required: true,
+          required: false,
           cash: false,
-          spent: true
+          spent: false
         };
       },
       error: (err) => console.error(err)
@@ -282,8 +282,8 @@ export class DashboardComponent implements OnInit {
 
   onSpentChange(isSpent: boolean) {
     if (!isSpent) {
-      // If not spent (Pending), required must be true as per logic
-      this.newExpense.required = true;
+      // If not spent (Earned), required should be false by default
+      this.newExpense.required = false;
     }
   }
 
