@@ -4,10 +4,12 @@ import { Router } from '@angular/router';
 import { ExpenseService, Expense } from '../../services/expense.service';
 import { DateService } from '../../services/date.service';
 import { AuthService } from '../../services/auth.service';
+import { SettingsService } from '../../services/settings.service';
 import { UiCardComponent, UiCardContentComponent, UiCardDescriptionComponent, UiCardHeaderComponent, UiCardTitleComponent } from '../../components/ui/card.component';
 import { UiButtonComponent } from '../../components/ui/button.component';
 import { FormsModule } from '@angular/forms';
 import { UiInputComponent } from '../../components/ui/input.component';
+import { HlmPaginationImports } from '../../components/ui/pagination/src';
 
 @Component({
   selector: 'app-dashboard',
@@ -23,7 +25,8 @@ import { UiInputComponent } from '../../components/ui/input.component';
     UiInputComponent,
     FormsModule,
     CurrencyPipe,
-    DatePipe
+    DatePipe,
+    HlmPaginationImports
   ],
   template: `
     <div class="space-y-8">
@@ -54,7 +57,7 @@ import { UiInputComponent } from '../../components/ui/input.component';
             </svg>
           </ui-card-header>
           <ui-card-content>
-            <div class="text-2xl font-bold text-red-600">{{ totalSpent | currency }}</div>
+            <div class="text-2xl font-bold text-red-600">{{ totalSpent | currency:currencyCode }}</div>
             <p class="text-xs text-muted-foreground">Actual expenses</p>
           </ui-card-content>
         </ui-card>
@@ -79,7 +82,7 @@ import { UiInputComponent } from '../../components/ui/input.component';
             </svg>
           </ui-card-header>
           <ui-card-content>
-            <div class="text-2xl font-bold text-green-600">{{ totalEarned | currency }}</div>
+            <div class="text-2xl font-bold text-green-600">{{ totalEarned | currency:currencyCode }}</div>
             <p class="text-xs text-muted-foreground">Total income</p>
           </ui-card-content>
         </ui-card>
@@ -89,7 +92,7 @@ import { UiInputComponent } from '../../components/ui/input.component';
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 text-muted-foreground"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/><path d="M16 18h.01"/></svg>
           </ui-card-header>
           <ui-card-content>
-            <div class="text-2xl font-bold">{{ spentThisWeek | currency }}</div>
+            <div class="text-2xl font-bold">{{ spentThisWeek | currency:currencyCode }}</div>
             <p class="text-xs text-muted-foreground">Mon - Today</p>
           </ui-card-content>
         </ui-card>
@@ -100,7 +103,7 @@ import { UiInputComponent } from '../../components/ui/input.component';
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 text-muted-foreground"><path d="M12 2v20"/><path d="M21 12H3"/><circle cx="12" cy="12" r="10"/></svg>
           </ui-card-header>
           <ui-card-content>
-            <div class="text-2xl font-bold">{{ averageSpent | currency }}</div>
+            <div class="text-2xl font-bold">{{ averageSpent | currency:currencyCode }}</div>
             <p class="text-xs text-muted-foreground">Per day this month</p>
           </ui-card-content>
         </ui-card>
@@ -155,7 +158,7 @@ import { UiInputComponent } from '../../components/ui/input.component';
                   </tr>
                 </thead>
                 <tbody>
-                  <tr *ngFor="let expense of expenses" class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+                  <tr *ngFor="let expense of paginatedExpenses" class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
                     <td class="p-4 align-middle">{{ expense.date | date:'mediumDate' }}</td>
                     <td class="p-4 align-middle font-medium">{{ expense.name }}</td>
 
@@ -166,7 +169,7 @@ import { UiInputComponent } from '../../components/ui/input.component';
                           'text-green-600': !expense.spent,
                           'text-amber-600': expense.spent && expense.required
                         }">
-                      {{ expense.transactionAmount | currency }}
+                      {{ expense.transactionAmount | currency:currencyCode }}
                     </td>
                   </tr>
                    <tr *ngIf="expenses.length === 0">
@@ -176,6 +179,21 @@ import { UiInputComponent } from '../../components/ui/input.component';
               </table>
             </div>
          </ui-card-content>
+         <!-- PAGINATION CONTROLS -->
+         <nav hlmPagination class="mt-4 flex justify-end">
+           <ul hlmPaginationContent>
+             <li hlmPaginationItem>
+               <hlm-pagination-previous (click)="prevPage()" /> <!-- Assuming link input isn't strictly required if we intercept click, or we pass link="#" and prevent default -->
+             </li>
+             <li hlmPaginationItem *ngFor="let page of getVisiblePages()">
+               <a *ngIf="page !== -1" hlmPaginationLink [isActive]="currentPage === page" (click)="setPage(page)" class="cursor-pointer">{{ page }}</a>
+               <hlm-pagination-ellipsis *ngIf="page === -1" />
+             </li>
+             <li hlmPaginationItem>
+               <hlm-pagination-next (click)="nextPage()" />
+             </li>
+           </ul>
+         </nav>
       </ui-card>
     </div>
   `,
@@ -185,21 +203,23 @@ export class DashboardComponent implements OnInit {
   currentDate = new Date();
   username = '';
 
-  newExpense: Partial<Expense> = {
-    name: '',
-    transactionAmount: 0,
-    required: false,
-    cash: false,
-    spent: true
-  };
+  newExpense: Partial<Expense> = {};
+  currencyCode = 'USD';
+
+  // Pagination
+  currentPage = 1;
+  pageSize = 10;
 
   constructor(
     private expenseService: ExpenseService,
     private authService: AuthService,
     private router: Router,
     private cdr: ChangeDetectorRef,
-    private dateService: DateService
-  ) { }
+    private dateService: DateService,
+    private settingsService: SettingsService
+  ) {
+    this.resetNewExpense();
+  }
 
 
 
@@ -211,6 +231,13 @@ export class DashboardComponent implements OnInit {
     }
     this.username = user.username;
     console.log('Dashboard initialized');
+
+    // Listen to settings changes
+    this.settingsService.settings$.subscribe(settings => {
+      this.currencyCode = settings.currencyCode;
+      this.pageSize = settings.pageSize;
+      this.currentPage = 1; // Reset to first page when settings change
+    });
 
     // Listen to global date changes
     this.dateService.currentDate$.subscribe(date => {
@@ -249,16 +276,22 @@ export class DashboardComponent implements OnInit {
     this.expenseService.addExpense(expense).subscribe({
       next: (res) => {
         // Clear form
-        this.newExpense = {
-          name: '',
-          transactionAmount: 0,
-          required: false,
-          cash: false,
-          spent: false
-        };
+        // Clear form
+        this.resetNewExpense();
       },
       error: (err) => console.error(err)
     });
+  }
+
+  resetNewExpense() {
+    const settings = this.settingsService.settings;
+    this.newExpense = {
+      name: '',
+      transactionAmount: 0,
+      required: settings.defaultRequired,
+      cash: settings.defaultCash,
+      spent: settings.defaultSpent
+    };
   }
 
 
@@ -318,5 +351,55 @@ export class DashboardComponent implements OnInit {
     }
 
     return this.totalSpent / (days || 1);
+  }
+
+  // Pagination Helpers
+  get paginatedExpenses(): Expense[] {
+    const startIndex = (this.currentPage - 1) * this.pageSize;
+    return this.expenses.slice(startIndex, startIndex + this.pageSize);
+  }
+
+  get totalPages(): number {
+    return Math.ceil(this.expenses.length / this.pageSize);
+  }
+
+  nextPage() {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+    }
+  }
+
+  prevPage() {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+    }
+  }
+
+  setPage(page: number) {
+    this.currentPage = page;
+  }
+
+  getVisiblePages(): number[] {
+    const total = this.totalPages || 1;
+    const current = this.currentPage;
+    const delta = 2;
+    const range = [];
+    for (let i = Math.max(2, current - delta); i <= Math.min(total - 1, current + delta); i++) {
+      range.push(i);
+    }
+
+    if (current - delta > 2) {
+      range.unshift(-1); // -1 indicates ellipsis
+    }
+    if (current + delta < total - 1) {
+      range.push(-1);
+    }
+
+    range.unshift(1);
+    if (total !== 1) {
+      range.push(total);
+    }
+
+    return range; // Return full range including -1 for ellipsis
   }
 }
