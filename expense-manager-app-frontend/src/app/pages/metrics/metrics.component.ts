@@ -7,7 +7,7 @@ import { DateService } from '../../services/date.service';
 import { ExpenseService, Expense } from '../../services/expense.service';
 import { SettingsService } from '../../services/settings.service';
 import { UiCardComponent, UiCardContentComponent, UiCardHeaderComponent, UiCardTitleComponent } from '../../components/ui/card.component';
-
+import { StatsCardsComponent } from '../../components/stats-cards/stats-cards.component';
 
 @Component({
   selector: 'app-metrics',
@@ -20,7 +20,8 @@ import { UiCardComponent, UiCardContentComponent, UiCardHeaderComponent, UiCardT
     UiCardTitleComponent,
     UiCardContentComponent,
     CurrencyPipe,
-    DatePipe
+    DatePipe,
+    StatsCardsComponent
   ],
   templateUrl: './metrics.component.html',
   styleUrl: './metrics.component.css'

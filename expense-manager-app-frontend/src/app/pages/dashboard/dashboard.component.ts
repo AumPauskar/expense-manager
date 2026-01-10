@@ -10,6 +10,7 @@ import { UiButtonComponent } from '../../components/ui/button.component';
 import { FormsModule } from '@angular/forms';
 import { UiInputComponent } from '../../components/ui/input.component';
 import { HlmPaginationImports } from '../../components/ui/pagination/src';
+import { StatsCardsComponent } from '../../components/stats-cards/stats-cards.component';
 
 @Component({
   selector: 'app-dashboard',
@@ -26,7 +27,8 @@ import { HlmPaginationImports } from '../../components/ui/pagination/src';
     FormsModule,
     CurrencyPipe,
     DatePipe,
-    HlmPaginationImports
+    HlmPaginationImports,
+    StatsCardsComponent
   ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
