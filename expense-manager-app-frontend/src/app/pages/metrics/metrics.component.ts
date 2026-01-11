@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { CommonModule, CurrencyPipe, DatePipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartData, ChartEvent, ChartType, Chart } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
@@ -19,8 +19,6 @@ import { StatsCardsComponent } from '../../components/stats-cards/stats-cards.co
     UiCardHeaderComponent,
     UiCardTitleComponent,
     UiCardContentComponent,
-    CurrencyPipe,
-    DatePipe,
     StatsCardsComponent
   ],
   templateUrl: './metrics.component.html',
