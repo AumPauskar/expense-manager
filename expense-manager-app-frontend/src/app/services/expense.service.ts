@@ -14,11 +14,13 @@ export interface Expense {
     date: string; // ISO string
 }
 
+import { environment } from '../../environments/environment';
+
 @Injectable({
     providedIn: 'root',
 })
 export class ExpenseService {
-    private apiUrl = 'http://localhost:5214/api/Expense';
+    private apiUrl = environment.apiUrl + '/Expense';
 
     private expensesSubject = new BehaviorSubject<Expense[]>([]);
     expenses$ = this.expensesSubject.asObservable();

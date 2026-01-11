@@ -7,11 +7,13 @@ export interface User {
     username: string;
 }
 
+import { environment } from '../../environments/environment';
+
 @Injectable({
     providedIn: 'root',
 })
 export class AuthService {
-    private apiUrl = 'http://localhost:5214/api/Account'; // Assuming backend port 5214
+    private apiUrl = environment.apiUrl + '/Account';
     private userSubject = new BehaviorSubject<User | null>(this.getUserFromStorage());
 
     user$ = this.userSubject.asObservable();
