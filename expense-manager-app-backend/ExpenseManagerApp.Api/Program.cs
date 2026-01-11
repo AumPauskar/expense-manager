@@ -34,4 +34,14 @@ app.UseMiddleware<AccountMiddleware>();
 
 app.MapControllers();
 
+// Apply migrations
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<ExpenseManagerApp.Infrastructure.Data.ApplicationDbContext>();
+    // This will create the database if it doesn't exist and apply pending migrations
+    // Note: ensure Microsoft.EntityFrameworkCore is imported if needed, usually available via dbContext
+    dbContext.Database.EnsureCreated(); 
+    // Or use Migrate() if you have migrations: dbContext.Database.Migrate();
+}
+
 app.Run();
