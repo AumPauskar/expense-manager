@@ -10,6 +10,9 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Add AWS Lambda Hosting
+builder.Services.AddAWSLambdaHosting(LambdaEventSource.HttpApi);
+
 // Add Layers
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplication();
