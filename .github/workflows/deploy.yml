@@ -70,7 +70,7 @@ jobs:
           cache-dependency-path: expense-manager-app-frontend/package-lock.json
 
       - name: Install Dependencies
-        run: npm ci
+        run: npm ci --legacy-peer-deps
         working-directory: expense-manager-app-frontend
 
       - name: Build
