@@ -1,0 +1,91 @@
+name: Deploy Frontend to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+  # Allows manual runs from the Actions tab on any branch
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  check-owner:
+    runs-on: ubuntu-latest
+    outputs:
+      is_owner: ${{ steps.verify.outputs.is_owner }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verify Code Owner
+        id: verify
+        run: |
+          # Read CODEOWNERS file (checking standard locations)
+          if [ -f ".github/CODEOWNERS" ]; then
+            OWNERS_FILE=".github/CODEOWNERS"
+          elif [ -f "CODEOWNERS" ]; then
+            OWNERS_FILE="CODEOWNERS"
+          elif [ -f "docs/CODEOWNERS" ]; then
+            OWNERS_FILE="docs/CODEOWNERS"
+          else
+            echo "CODEOWNERS file not found. Failing for safety."
+            exit 1
+          fi
+
+          # Check if the person who clicked 'Run Workflow' is mentioned in the file
+          # We check for @username or just username.
+          USER="${{ github.actor }}"
+          if grep -q "@$USER" "$OWNERS_FILE" || grep -q " $USER" "$OWNERS_FILE"; then
+            echo "User $USER is a Code Owner."
+            echo "is_owner=true" >> $GITHUB_OUTPUT
+          else
+            echo "User $USER is NOT a Code Owner. Access denied."
+            exit 1
+          fi
+
+  deploy:
+    needs: check-owner
+    if: github.event_name == 'push' || needs.check-owner.outputs.is_owner == 'true'
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: expense-manager-app-frontend/package-lock.json
+
+      - name: Install Dependencies
+        run: npm ci
+        working-directory: expense-manager-app-frontend
+
+      - name: Build
+        # Uses the repository name for the base href
+        run: npm run build -- --base-href /${{ github.event.repository.name }}/
+        working-directory: expense-manager-app-frontend
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: expense-manager-app-frontend/dist/expense-manager-app-frontend/browser
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
