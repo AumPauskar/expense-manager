@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+  # Allows manual runs from the Actions tab on any branch
   workflow_dispatch:
 
 permissions:
@@ -16,7 +17,43 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  check-owner:
+    runs-on: ubuntu-latest
+    outputs:
+      is_owner: ${{ steps.verify.outputs.is_owner }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verify Code Owner
+        id: verify
+        run: |
+          # Read CODEOWNERS file (checking standard locations)
+          if [ -f ".github/CODEOWNERS" ]; then
+            OWNERS_FILE=".github/CODEOWNERS"
+          elif [ -f "CODEOWNERS" ]; then
+            OWNERS_FILE="CODEOWNERS"
+          elif [ -f "docs/CODEOWNERS" ]; then
+            OWNERS_FILE="docs/CODEOWNERS"
+          else
+            echo "CODEOWNERS file not found. Failing for safety."
+            exit 1
+          fi
+
+          # Check if the person who clicked 'Run Workflow' is mentioned in the file
+          # We check for @username or just username.
+          USER="${{ github.actor }}"
+          if grep -q "@$USER" "$OWNERS_FILE" || grep -q " $USER" "$OWNERS_FILE"; then
+            echo "User $USER is a Code Owner."
+            echo "is_owner=true" >> $GITHUB_OUTPUT
+          else
+            echo "User $USER is NOT a Code Owner. Access denied."
+            exit 1
+          fi
+
   deploy:
+    needs: check-owner
+    if: github.event_name == 'push' || needs.check-owner.outputs.is_owner == 'true'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -37,7 +74,7 @@ jobs:
         working-directory: expense-manager-app-frontend
 
       - name: Build
-        # Replace <REPOSITORY_NAME> with your actual repository name, e.g., /expense-manager/
+        # Uses the repository name for the base href
         run: npm run build -- --base-href /${{ github.event.repository.name }}/
         working-directory: expense-manager-app-frontend
 
