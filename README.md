@@ -80,6 +80,3 @@ The project uses a **Proxy Lambda Pattern** to optimize costs while maintaining 
 
 ---
 
-## 📄 License
-
-This project is licensed under the MIT License.
