@@ -3,7 +3,7 @@
 ## Quick Info
 - **Type**: Full-stack Web Application
 - **Core Purpose**: Personal finance tracking with monthly metrics and dashboard.
-- **Primary Stack**: .NET 8 (API) + Angular 18 (SPA) + PostgreSQL (DB).
+- **Primary Stack**: .NET 10 (API) + Angular 21 (SPA) + PostgreSQL 16 (DB).
 
 ## System Architecture
 - **Backend**: Clean Architecture (.Domain, .Application, .Infrastructure, .Api). 
