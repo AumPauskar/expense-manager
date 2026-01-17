@@ -77,11 +77,11 @@ resource "aws_db_instance" "default" {
 
 # Lambda Function (Inner - Private, .NET)
 resource "aws_lambda_function" "inner" {
-  filename      = "../expense-manager-app-backend/ExpenseManagerApp.Api/bin/Release/net8.0/publish/ExpenseManagerApp.Api.zip"
+  filename      = "../expense-manager-app-backend/ExpenseManagerApp.Api/bin/Release/net10.0/publish/ExpenseManagerApp.Api.zip"
   function_name = "${var.project_name}-inner-${random_string.suffix.result}"
   role          = aws_iam_role.lambda_exec.arn
   handler       = "ExpenseManagerApp.Api"
-  runtime       = "dotnet8"
+  runtime       = "dotnet10"
   timeout       = 30
   memory_size   = 512
 
