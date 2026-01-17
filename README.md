@@ -19,28 +19,28 @@ A sleek, modern full-stack application designed to help you track and manage you
 ```mermaid
 graph TD
     subgraph Frontend ["Frontend (Angular 21)"]
-        A[Angular 21] --> B[Tailwind CSS 4.0]
-        A --> C[Chart.js / ng2-charts]
-        A --> D[Lucide Icons]
-        A --> E[Spartan NG]
-        A --> F[Vitest / JSDOM]
+        A["Angular 21"] --> B["Tailwind CSS 4.0"]
+        A --> C["Chart.js / ng2-charts"]
+        A --> D["Lucide Icons"]
+        A --> E["Spartan NG"]
+        A --> F["Vitest / JSDOM"]
     end
 
     subgraph Backend [".NET 10 (C#)"]
-        G[ASP.NET Core 10] --> H[EF Core 10]
-        G --> I[Npgsql]
-        G --> J[BCrypt.Net]
-        G --> K[OpenAPI / Swagger]
+        G["ASP.NET Core 10"] --> H["EF Core 10"]
+        G --> I["Npgsql"]
+        G --> J["BCrypt.Net"]
+        G --> K["OpenAPI / Swagger"]
     end
 
     subgraph Infrastructure ["Infrastructure (AWS & DevOps)"]
-        L[API Gateway] --> M[Proxy Lambda (Node.js)]
-        M --> N[Inner Lambda (.NET 10)]
-        N --> O[RDS PostgreSQL 16]
-        P[Terraform] --> Infrastructure
-        Q[GitHub Actions] --> Infrastructure
+        L["API Gateway"] --> M["Proxy Lambda (Node.js)"]
+        M --> N["Inner Lambda (.NET 10)"]
+        N --> O["RDS PostgreSQL 16"]
     end
 
+    P["Terraform"] -- "Deploys" --> Infrastructure
+    Q["GitHub Actions"] -- "CI/CD" --> Infrastructure
     Frontend -- "REST API" --> L
 ```
 
