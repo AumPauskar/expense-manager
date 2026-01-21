@@ -29,24 +29,29 @@ namespace ExpenseManagerApp.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddExpense([FromBody] AddExpenseDto expenseDto)
+        public async Task<IActionResult> AddExpense([FromBody] List<AddExpenseDto> expenseDtos)
         {
             if (HttpContext.Items["AccountId"] is not int accountId)
                 return Unauthorized("Please provide X-Account-Id header");
 
-            var expense = new Expense
+            var expenses = new List<Expense>();
+            foreach (var expenseDto in expenseDtos)
             {
-                AccountId = accountId,
-                Name = expenseDto.Name,
-                Required = expenseDto.Required,
-                Cash = expenseDto.Cash,
-                Spent = expenseDto.Spent,
-                TransactionAmount = expenseDto.TransactionAmount,
-                Date = expenseDto.Date ?? DateTime.UtcNow
-            };
+                var expense = new Expense
+                {
+                    AccountId = accountId,
+                    Name = expenseDto.Name,
+                    Required = expenseDto.Required,
+                    Cash = expenseDto.Cash,
+                    Spent = expenseDto.Spent,
+                    TransactionAmount = expenseDto.TransactionAmount,
+                    Date = expenseDto.Date ?? DateTime.UtcNow
+                };
+                expenses.Add(expense);
+            }
 
-            await _expenseService.AddExpenseAsync(expense);
-            return Ok(expense);
+            await _expenseService.AddExpensesAsync(expenses);
+            return Ok(expenses);
         }
     }
 }

@@ -97,7 +97,10 @@ export class DashboardComponent implements OnInit {
 
 
 
-  addExpense() {
+  queue: Expense[] = [];
+  isSubmitting = false;
+
+  addToQueue() {
     if (!this.newExpense.name || !this.newExpense.transactionAmount) return;
 
     const expense: Expense = {
@@ -106,20 +109,30 @@ export class DashboardComponent implements OnInit {
       date: new Date().toISOString()
     };
 
-    // If expense date should be in the currently selected month? 
-    // Usually user adds expense for today. If viewing past month, this might be confusing.
-    // We will stick to "Today" for new expenses for now.
+    this.queue.push(expense);
+    toast.info('Added to queue. Click Submit All to save.');
+    this.resetNewExpense();
+  }
 
-    this.expenseService.addExpense(expense).subscribe({
+  removeFromQueue(index: number) {
+    this.queue.splice(index, 1);
+  }
+
+  submitQueue() {
+    if (this.queue.length === 0) return;
+
+    this.isSubmitting = true;
+    this.expenseService.addExpenses(this.queue).subscribe({
       next: (res) => {
-        toast.success('Expense added successfully!');
-        // Clear form
-        this.resetNewExpense();
+        toast.success(`${res.length} expenses added successfully!`);
+        this.queue = [];
+        this.isSubmitting = false;
         this.cdr.detectChanges();
       },
       error: (err) => {
-        toast.error('Failed to add expense');
+        toast.error('Failed to submit expenses');
         console.error(err);
+        this.isSubmitting = false;
       }
     });
   }

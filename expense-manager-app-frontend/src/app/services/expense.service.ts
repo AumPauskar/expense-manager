@@ -55,22 +55,42 @@ export class ExpenseService {
         );
     }
 
-    addExpense(expense: Expense): Observable<Expense> {
-        return this.http.post<Expense>(this.apiUrl, expense, {
+    addExpense(expense: Expense): Observable<Expense[]> {
+        return this.http.post<Expense[]>(this.apiUrl, [expense], {
             headers: this.getHeaders(),
         }).pipe(
-            tap(newExpense => {
-                // Refresh local state if it's the same month
-                const expenseDate = new Date(newExpense.date);
-                const cacheKey = `${expenseDate.getFullYear()}-${expenseDate.getMonth() + 1}`;
-                if (this.lastCacheKey === cacheKey) {
-                    const current = this.expensesSubject.value;
-                    this.expensesSubject.next([...current, newExpense]);
-                } else {
-                    this.lastCacheKey = ''; // Invalidate cache if adding to different month
-                }
+            tap(newExpenses => {
+                this.updateLocalState(newExpenses);
             })
         );
+    }
+
+    addExpenses(expenses: Expense[]): Observable<Expense[]> {
+        return this.http.post<Expense[]>(this.apiUrl, expenses, {
+            headers: this.getHeaders(),
+        }).pipe(
+            tap(newExpenses => {
+                this.updateLocalState(newExpenses);
+            })
+        );
+    }
+
+    private updateLocalState(newExpenses: Expense[]) {
+        if (!newExpenses || newExpenses.length === 0) return;
+
+        // Assuming all expenses are for the same month for simplicity in cache update
+        // or we just invalidate. Let's invalidate if unsure.
+        // Actually, let's try to be smart.
+        const first = newExpenses[0];
+        const expenseDate = new Date(first.date);
+        const cacheKey = `${expenseDate.getFullYear()}-${expenseDate.getMonth() + 1}`;
+        
+        if (this.lastCacheKey === cacheKey) {
+            const current = this.expensesSubject.value;
+            this.expensesSubject.next([...current, ...newExpenses]);
+        } else {
+            this.lastCacheKey = ''; 
+        }
     }
 
     // Explicitly clear cache (e.g. on logout)
