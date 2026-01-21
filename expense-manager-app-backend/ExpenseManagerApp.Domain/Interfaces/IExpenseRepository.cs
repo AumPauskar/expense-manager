@@ -6,5 +6,6 @@ namespace ExpenseManagerApp.Domain.Interfaces
     {
         Task<IEnumerable<Expense>> GetExpensesByAccountIdAndMonthAsync(int accountId, int year, int month);
         Task AddAsync(Expense expense);
+        Task AddRangeAsync(IEnumerable<Expense> expenses);
     }
 }

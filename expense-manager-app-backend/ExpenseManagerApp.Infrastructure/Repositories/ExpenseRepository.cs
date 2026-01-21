@@ -26,5 +26,11 @@ namespace ExpenseManagerApp.Infrastructure.Repositories
             _context.Expenses.Add(expense);
             await _context.SaveChangesAsync();
         }
+
+        public async Task AddRangeAsync(IEnumerable<Expense> expenses)
+        {
+            _context.Expenses.AddRange(expenses);
+            await _context.SaveChangesAsync();
+        }
     }
 }

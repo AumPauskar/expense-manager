@@ -40,7 +40,44 @@
                         class="accent-primary rounded" /> Spent
                 </label>
             </div>
-            <ui-button (click)="addExpense()">Add</ui-button>
+            <ui-button (click)="addToQueue()">Add to Queue</ui-button>
+        </ui-card-content>
+    </ui-card>
+
+    <!-- Queue Section -->
+    <ui-card *ngIf="queue.length > 0" class="border-primary/50">
+        <ui-card-header>
+            <ui-card-title>Pending Expenses ({{ queue.length }})</ui-card-title>
+            <ui-card-description>Review and submit your batched expenses.</ui-card-description>
+        </ui-card-header>
+        <ui-card-content>
+            <div class="rounded-md border mb-4">
+                <table class="w-full text-sm text-left">
+                    <thead class="bg-muted/50 text-muted-foreground">
+                        <tr class="border-b">
+                            <th class="h-10 px-4 font-medium">Name</th>
+                            <th class="h-10 px-4 font-medium text-right">Amount</th>
+                            <th class="h-10 px-4 font-medium w-[50px]">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let item of queue; let i = index" class="border-b">
+                            <td class="p-3">{{ item.name }}</td>
+                            <td class="p-3 text-right">{{ item.transactionAmount | currency:currencyCode }}</td>
+                            <td class="p-3">
+                                <button (click)="removeFromQueue(i)" class="text-red-500 hover:text-red-700">
+                                    Remove
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="flex justify-end">
+                <ui-button variant="default" (click)="submitQueue()" [disabled]="isSubmitting">
+                    {{ isSubmitting ? 'Submitting...' : 'Submit All' }}
+                </ui-button>
+            </div>
         </ui-card-content>
     </ui-card>
 

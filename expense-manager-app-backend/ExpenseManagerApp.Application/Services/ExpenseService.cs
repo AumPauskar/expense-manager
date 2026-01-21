@@ -24,5 +24,10 @@ namespace ExpenseManagerApp.Application.Services
             // Could add more validation here
             await _expenseRepository.AddAsync(expense);
         }
+
+        public async Task AddExpensesAsync(IEnumerable<Expense> expenses)
+        {
+            await _expenseRepository.AddRangeAsync(expenses);
+        }
     }
 }
