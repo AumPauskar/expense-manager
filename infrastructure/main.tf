@@ -77,11 +77,12 @@ resource "aws_db_instance" "default" {
 
 # Lambda Function (Inner - Private, .NET)
 resource "aws_lambda_function" "inner" {
-  filename      = "../expense-manager-app-backend/ExpenseManagerApp.Api/bin/Release/net10.0/publish/ExpenseManagerApp.Api.zip"
+  filename      = data.archive_file.inner_zip.output_path
+  source_code_hash = data.archive_file.inner_zip.output_base64sha256
   function_name = "${var.project_name}-inner-${random_string.suffix.result}"
   role          = aws_iam_role.lambda_exec.arn
-  handler       = "ExpenseManagerApp.Api"
-  runtime       = "dotnet10"
+  handler       = "bootstrap"
+  runtime       = "provided.al2023"
   timeout       = 30
   memory_size   = 512
 
@@ -144,6 +145,13 @@ export const handler = async (event) => {
 };
 EOF
   }
+}
+
+# Zip the published .NET code
+data "archive_file" "inner_zip" {
+  type        = "zip"
+  output_path = "inner.zip"
+  source_dir  = "../expense-manager-app-backend/ExpenseManagerApp.Api/bin/Release/net10.0/publish"
 }
 
 # IAM Role for Inner Lambda
